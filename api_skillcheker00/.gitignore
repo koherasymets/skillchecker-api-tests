@@ -1,0 +1,49 @@
+# Java build
+/target/
+/out/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# VS Code
+.vscode/
+
+# OS junk files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Maven
+/logs/
+/dependency-reduced-pom.xml
+
+# Environment files
+*.env
+
+# Allure results & reports
+allure-results/
+allure-report/
+
+# Postman temp files
+newman/
+
+# Backup archives
+*.zip
+*.tar.gz
+
+# System files
+*.swp
+
+# Node modules (если вдруг)
+node_modules/
+
+# Compiled class files
+*.class
