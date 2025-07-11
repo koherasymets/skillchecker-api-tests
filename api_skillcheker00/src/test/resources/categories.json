@@ -8,7 +8,7 @@
     "matchedStatuses": ["failed"]
   },
   {
-    "name": "Known issues",
+    "name": "Infrastructure problems",
     "matchedStatuses": ["broken"]
   }
 ]

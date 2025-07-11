@@ -1,8 +1,8 @@
 {
   "name": "Local Run",
   "type": "local",
+  "reportName": "Allure Report",
   "buildName": "Run 1",
   "buildUrl": "http://localhost",
-  "reportUrl": "http://localhost",
-  "reportName": "Allure Report"
+  "reportUrl": "http://localhost"
 }

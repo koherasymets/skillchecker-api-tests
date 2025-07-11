@@ -6,7 +6,8 @@ import io.restassured.filter.Filter;
 public class CustomAllureListener {
 
     public static Filter withCustomTemplates() {
-        return new AllureRestAssured();
+        return new AllureRestAssured()
+                .setRequestTemplate("request.ftl")
+                .setResponseTemplate("response.ftl");
     }
-
 }

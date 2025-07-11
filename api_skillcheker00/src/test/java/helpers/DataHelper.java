@@ -1,26 +1,26 @@
 package helpers;
 
-import java.util.Random;
+import org.apache.commons.lang3.RandomStringUtils;
 
 public class DataHelper {
 
     public static String generateRandomEmail() {
-        return "user" + System.currentTimeMillis() + "@skillchecker.tech";
+        return "user_" + RandomStringUtils.randomAlphabetic(6).toLowerCase() + "@skillchecker.tech";
     }
 
     public static String generateRandomPassword() {
-        return "pass" + new Random().nextInt(99999);
+        return "Pass" + RandomStringUtils.randomNumeric(5);
     }
 
     public static String generateInvalidEmail() {
-        return "invalid" + new Random().nextInt(99999) + "@wrongdomain.com";
+        return "invalid_" + RandomStringUtils.randomAlphabetic(6).toLowerCase() + "@wrongdomain.com";
     }
 
     public static String generateInvalidPassword() {
-        return "wrongpass" + new Random().nextInt(99999);
+        return "WrongPass" + RandomStringUtils.randomNumeric(5);
     }
 
     public static String generateRandomTestName() {
-        return "API_Test_" + System.currentTimeMillis();
+        return "API_Test_" + RandomStringUtils.randomAlphanumeric(8);
     }
 }

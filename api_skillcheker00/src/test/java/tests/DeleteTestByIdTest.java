@@ -1,58 +1,39 @@
 package tests;
 
-import helpers.ConfigProvider;
+import dto.TestRequest;
 import helpers.DataHelper;
 import io.qameta.allure.Allure;
-import io.restassured.http.ContentType;
 import org.testng.annotations.Test;
+import wrappers.AuthApiWrapper;
+import wrappers.TestsApiWrapper;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+import static specs.Specs.baseRequestSpec;
 
 public class DeleteTestByIdTest extends TestBase {
 
     @Test
     public void createAndDeleteTestById() {
-        String sid = Allure.step("Login and get SID", () ->
-                given()
-                        .baseUri(ConfigProvider.BASE_URL)
-                        .contentType(ContentType.JSON)
-                        .body("{\"email\": \"admin@skillchecker.tech\", \"password\": \"admin123\"}")
-                        .when()
-                        .post("/login")
-                        .then()
-                        .statusCode(200)
-                        .extract().cookie("connect.sid")
-        );
+        String sid = Allure.step("Login and get SID", AuthApiWrapper::loginAsAdmin);
 
-        String testName = DataHelper.generateRandomTestName();
+        TestRequest request = new TestRequest();
+        request.setName(DataHelper.generateRandomTestName());
+        request.setDescription("To be deleted");
+        request.setTimeLimit(30);
+        request.setPassingScore(70);
 
-        int testId = Allure.step("Create new test with name: " + testName, () ->
-                given()
-                        .baseUri(ConfigProvider.BASE_URL)
-                        .contentType(ContentType.JSON)
-                        .cookie("connect.sid", sid)
-                        .body("{\"name\": \"" + testName + "\"}")
-                        .when()
-                        .post("/tests")
-                        .then()
-                        .statusCode(201)
-                        .extract().jsonPath().getInt("id")
+        int testId = Allure.step("Create new test", () ->
+                TestsApiWrapper.createTestPositive(sid, request)
         );
 
         Allure.step("Delete test by ID", () ->
-                given()
-                        .baseUri(ConfigProvider.BASE_URL)
-                        .cookie("connect.sid", sid)
-                        .when()
-                        .delete("/tests/" + testId)
-                        .then()
-                        .statusCode(204)
+                TestsApiWrapper.deleteTestById(sid, testId)
         );
 
-        Allure.step("Check that deleted test returns 404", () ->
+        Allure.step("Check deleted test returns 404", () ->
                 given()
-                        .baseUri(ConfigProvider.BASE_URL)
+                        .spec(baseRequestSpec)
                         .cookie("connect.sid", sid)
                         .when()
                         .get("/tests/" + testId)

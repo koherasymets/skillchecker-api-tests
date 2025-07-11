@@ -1,0 +1,780 @@
+{
+	"info": {
+		"_postman_id": "5d991951-8920-44c5-9a79-ef445f7f6f8e",
+		"name": "SkillChecker API Tests",
+		"description": "This collection covers SkillChecker API basic CRUD:\n\n- Auth: login/logout, error cases\n    \n- Tests: create, get, update, delete (independent)  \n    Variables: baseUrl, sid, testId",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46232657",
+		"_collection_link": "https://kostiantyn-8280408.postman.co/workspace/Kostiantyn's-Workspace~5983075f-c3a5-4dae-8406-5ba91ba4a20e/collection/46232657-5d991951-8920-44c5-9a79-ef445f7f6f8e?action=share&source=collection_link&creator=46232657"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Successful Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"  pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var rawCookie = pm.response.headers.get('Set-Cookie');\r",
+									"if (rawCookie) {\r",
+									"  var sid = rawCookie.split(';')[0].split('=')[1];\r",
+									"  pm.environment.set(\"sid\", sid);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"content-type": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"admin@skillchecker.tech\",\r\n  \"password\": \"admin123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Empty Body",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Email and password are required\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Missing Email",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Email and password are required\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"password\": \"ValidPassword123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login Invalid Credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {\r",
+									"    pm.response.to.have.status(401);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Invalid credentials\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"admin@skillchecker.tech\",\r\n  \"password\": \"WrongPassword123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout User Session",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Authenticated User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has user info\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData).to.have.property(\"email\");\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Tests",
+			"item": [
+				{
+					"name": "Get All Tests",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Response is an array\", function () {\r",
+									"    pm.expect(jsonData).to.be.an(\"array\");\r",
+									"});\r",
+									"\r",
+									"var expectedId = parseInt(pm.environment.get(\"testId\"));\r",
+									"console.log(\"Ищем testId:\", expectedId);\r",
+									"\r",
+									"var found = jsonData.some(function (test) {\r",
+									"    return test.id === expectedId;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Test ID \" + expectedId + \" is present in the list\", function () {\r",
+									"    pm.expect(found).to.be.true;\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tests",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tests"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Test Invalid Input",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message explains invalid input\", function () {\r",
+									"    pm.expect(pm.response.text().toLowerCase()).to.include(\"invalid\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"description\": \"This should fail because name is missing\",\r\n  \"category\": \"Demo\",\r\n  \"timeLimit\": 30,\r\n  \"passingScore\": 70\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tests",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tests"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Test",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"console.log(\"DEBUG Response JSON:\", jsonData);\r",
+									"\r",
+									"pm.test(\"Status code is 201\", function () {\r",
+									"    pm.response.to.have.status(201);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has id\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"});\r",
+									"\r",
+									"pm.environment.set(\"testId\", jsonData.id);\r",
+									"console.log(\"Сохранён testId:\", jsonData.id);\r",
+									"\r",
+									"pm.environment.set(\"testId\", jsonData.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"API Test Example (ko.herasymets)\",\r\n  \"description\": \"This is a test created via Postman.\",\r\n  \"category\": \"Demo\",\r\n  \"timeLimit\": 30,\r\n  \"passingScore\": 70\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tests",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tests"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response has all required fields\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData).to.have.property(\"isActive\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Test name is correct\", function () {\r",
+									"    pm.expect(jsonData.name).to.eql(\"API Test Example (ko.herasymets)\");\r",
+									"});\r",
+									"\r",
+									"console.log(\"✅ GET вернул testId:\", jsonData.id);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tests/{{testId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tests",
+								"{{testId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test by ID - Not Found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 404\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Error message is correct\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.message).to.include(\"not found\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/tests/9999",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tests",
+								"9999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Test by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"console.log(\"PATCH Response:\", jsonData);\r",
+									"\r",
+									"var expectedId = parseInt(pm.environment.get(\"testId\"));\r",
+									"\r",
+									"pm.test(\"Correct testId in response\", function () {\r",
+									"    pm.expect(jsonData.id).to.eql(expectedId);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Name updated\", function () {\r",
+									"    pm.expect(jsonData.name).to.eql(\"Updated name via PATCH\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Description updated\", function () {\r",
+									"    pm.expect(jsonData.description).to.eql(\"Updated description via PATCH\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (!pm.environment.get(\"sid\")) {\r",
+									"    throw new Error(\"SID не найден! Залогинься отдельно или через Pre-request.\");\r",
+									"}\r",
+									"\r",
+									"if (pm.environment.get(\"testId\")) {\r",
+									"    console.log(\"testId уже есть:\", pm.environment.get(\"testId\"));\r",
+									"} else {\r",
+									"    console.log(\"testId пустой — создаём новый тест...\");\r",
+									"\r",
+									"    const createPayload = {\r",
+									"        name: \"AutoCreated for PATCH\",\r",
+									"        description: \"This test was created in Pre-request Script\",\r",
+									"        timeLimit: 30,\r",
+									"        passingScore: 70\r",
+									"    };\r",
+									"\r",
+									"    pm.sendRequest({\r",
+									"        url: pm.environment.get(\"baseUrl\") + \"/tests\",\r",
+									"        method: \"POST\",\r",
+									"        header: {\r",
+									"            \"Content-Type\": \"application/json\",\r",
+									"            \"Cookie\": \"connect.sid=\" + pm.environment.get(\"sid\")\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: \"raw\",\r",
+									"            raw: JSON.stringify(createPayload)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.error(err);\r",
+									"            throw new Error(\"Не удалось создать тест для PATCH\");\r",
+									"        }\r",
+									"        const json = res.json();\r",
+									"        pm.environment.set(\"testId\", json.id);\r",
+									"        console.log(\"✅ Новый testId создан:\", json.id);\r",
+									"    });\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "connect.sid={{sid}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"name\": \"Updated name via PATCH\",\r\n  \"description\": \"Updated description via PATCH\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/tests/{{testId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tests",
+								"{{testId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200 or 204\", function () {\r",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 204]);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Response body is empty\", function () {\r",
+									"    pm.expect(pm.response.text()).to.be.oneOf([\"\", \"{}\"]);\r",
+									"});\r",
+									"\r",
+									"console.log(\"Deleted testId:\", pm.environment.get(\"testId\"));\r",
+									"pm.environment.unset(\"testId\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (!pm.environment.get(\"sid\")) {\r",
+									"    throw new Error(\"SID не найден! Залогинься отдельно или через Pre-request.\");\r",
+									"}\r",
+									"\r",
+									"if (!pm.environment.get(\"testId\")) {\r",
+									"    console.log(\"testId пустой → создаём новый для Delete...\");\r",
+									"\r",
+									"    const createPayload = {\r",
+									"        name: \"AutoCreated for DELETE\",\r",
+									"        description: \"This test was created in Pre-request Script\",\r",
+									"        timeLimit: 30,\r",
+									"        passingScore: 70\r",
+									"    };\r",
+									"\r",
+									"    pm.sendRequest({\r",
+									"        url: pm.environment.get(\"baseUrl\") + \"/tests\",\r",
+									"        method: \"POST\",\r",
+									"        header: {\r",
+									"            \"Content-Type\": \"application/json\",\r",
+									"            \"Cookie\": \"connect.sid=\" + pm.environment.get(\"sid\")\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: \"raw\",\r",
+									"            raw: JSON.stringify(createPayload)\r",
+									"        }\r",
+									"    }, function (err, res) {\r",
+									"        if (err) {\r",
+									"            console.log(err);\r",
+									"        } else {\r",
+									"            const json = res.json();\r",
+									"            pm.environment.set(\"testId\", json.id);\r",
+									"            console.log(\"Создан testId для Delete:\", json.id);\r",
+									"        }\r",
+									"    });\r",
+									"} else {\r",
+									"    console.log(\"testId уже есть:\", pm.environment.get(\"testId\"));\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Cookie",
+								"value": "connect.sid={{sid}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/tests/{{testId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"tests",
+								"{{testId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
