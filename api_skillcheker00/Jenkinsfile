@@ -1,19 +1,20 @@
 pipeline {
-    agent any
-    stages {
-        stage('Build') {
-            steps {
-                bat 'echo "Hello World"'
-                bat '''
-                    echo "Multiline shell steps works too"
-                    dir
-                '''
-            }
+  agent { label 'windows' }
+
+  stages {
+    stage('Build') {
+      steps {
+        dir('api_skillcheker00') {
+          bat 'mvn -B -DskipTests clean package'
         }
-        stage('Test') {
-            steps {
-                bat 'mvn test'
-            }
-        }
+      }
     }
+    stage('Test') {
+      steps {
+        dir('api_skillcheker00') {
+          bat 'mvn -B test'
+        }
+      }
+    }
+  }
 }
