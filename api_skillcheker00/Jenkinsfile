@@ -2,8 +2,8 @@ pipeline {
   agent any
 
   tools {
-    jdk   'Temurin 21'        // имя как в Manage Jenkins → Tools
-    maven 'Maven 3.9.x'       // имя как в Tools
+    jdk   'Temurin 21'       // имя как в Manage Jenkins → Tools
+    maven 'Maven 3.9.x'      // имя как в Tools
   }
 
   options { timestamps(); ansiColor('xterm') }
@@ -11,10 +11,9 @@ pipeline {
   stages {
     stage('Checkout') {
       steps {
-        // если репозиторий один и папка в нём api_skillcheker00 — просто забираем весь репо
-        git url: 'https://github.com/<your-user>/<your-repo>.git', branch: 'main'
-        // если репо приватный — добавь credentialsId:
-        // git branch: 'main', credentialsId: 'github_token', url: 'https://github.com/...'
+        git url: 'https://github.com/koherasymets/skillchecker-api-tests.git', branch: 'main'
+        // если приватно — добавь credentialsId:
+        // git branch: 'main', credentialsId: 'github_token', url: 'https://github.com/koherasymets/skillchecker-api-tests.git'
       }
     }
 
@@ -34,13 +33,9 @@ pipeline {
       }
       post {
         always {
-          // отчёты JUnit (путь проверь: surefire или failsafe)
           junit 'api_skillcheker00/target/surefire-reports/*.xml'
-          // если используешь Allure:
-          // allure([
-          //   includeProperties: false,
-          //   results: [[path: 'api_skillcheker00/target/allure-results']]
-          // ])
+          // Раскомментируй, если у тебя есть allure-results
+          // allure([results: [[path: 'api_skillcheker00/target/allure-results']]])
         }
       }
     }
