@@ -2,25 +2,25 @@ pipeline {
   agent any
 
   tools {
-    jdk   'Temurin 21'       // имя как в Manage Jenkins → Tools
-    maven 'Maven 3.9.x'      // имя как в Tools
+    maven 'Maven 3.9.8'
   }
 
-  options { timestamps(); ansiColor('xterm') }
+  options { timestamps() }
 
   stages {
     stage('Checkout') {
       steps {
         git url: 'https://github.com/koherasymets/skillchecker-api-tests.git', branch: 'main'
-        // если приватно — добавь credentialsId:
-        // git branch: 'main', credentialsId: 'github_token', url: 'https://github.com/koherasymets/skillchecker-api-tests.git'
       }
     }
 
     stage('Build') {
       steps {
         dir('api_skillcheker00') {
-          bat 'mvn -B -DskipTests clean package'
+          script {
+            if (isUnix()) { sh 'mvn -B -DskipTests clean package' }
+            else { bat 'mvn -B -DskipTests clean package' }
+          }
         }
       }
     }
@@ -28,14 +28,15 @@ pipeline {
     stage('Test') {
       steps {
         dir('api_skillcheker00') {
-          bat 'mvn -B test'
+          script {
+            if (isUnix()) { sh 'mvn -B test' }
+            else { bat 'mvn -B test' }
+          }
         }
       }
       post {
         always {
           junit 'api_skillcheker00/target/surefire-reports/*.xml'
-          // Раскомментируй, если у тебя есть allure-results
-          // allure([results: [[path: 'api_skillcheker00/target/allure-results']]])
         }
       }
     }
