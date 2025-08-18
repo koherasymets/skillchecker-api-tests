@@ -1,31 +1,24 @@
 pipeline {
-  agent { label 'aws-ec2' }
-  options { timestamps(); ansiColor('xterm') }
-  environment {
-    PROJECT_DIR = 'api_skillcheker00'
-    MAVEN_OPTS  = '-Dmaven.test.failure.ignore=true'
-  }
-  stages {
-    stage('Checkout') { steps { checkout scm } }
-    stage('Prepare env') {
-      steps {
-        sh 'java -version && mvn -v'
-        sh 'mvn -B -f $PROJECT_DIR/pom.xml -U -DskipTests=true clean compile'
-      }
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                bat 'echo Hello World'  //Коммент ще
+                bat '''
+                    echo Multiline shell steps works too
+                    dir
+                '''
+            }
+        }
+        stage('Test') {
+                    steps {
+                        bat 'mvn test'
     }
-    stage('Run tests') {
-      steps { sh 'mvn -B -f $PROJECT_DIR/pom.xml test' }
+}
+}
+post {
+        always {
+            junit 'target/surefire-reports/*.xml'
+        }
     }
-    stage('Generate HTML report') {
-      steps { sh 'mvn -B -f $PROJECT_DIR/pom.xml -DskipTests surefire-report:report || true' }
-    }
-  }
-  post {
-    always {
-      junit allowEmptyResults: true, testResults: '$PROJECT_DIR/target/surefire-reports/*.xml'
-      publishHTML([allowMissing: true, alwaysLinkToLastBuild: true, keepAll: true, reportDir: "${env.PROJECT_DIR}/target/site", reportFiles: "surefire-report.html", reportName: "Surefire HTML"])
-      allure results: [[path: "${env.PROJECT_DIR}/target/allure-results"]]
-      archiveArtifacts artifacts: '$PROJECT_DIR/target/**/*', fingerprint: true, onlyIfSuccessful: false
-    }
-  }
 }
