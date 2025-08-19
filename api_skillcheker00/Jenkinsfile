@@ -34,7 +34,6 @@ pipeline {
       }
     }
   }
-
   post {
     always {
       junit 'api_skillcheker00/target/surefire-reports/*.xml'
