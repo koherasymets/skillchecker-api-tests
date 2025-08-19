@@ -25,27 +25,24 @@ pipeline {
         }
       }
     }
-
-    stage('Report (HTML)') {
-      steps {
-        dir('api_skillcheker00') {
-          sh 'mvn -B -q surefire-report:report'
-        }
-        publishHTML target: [
-          allowMissing: false,
-          alwaysLinkToLastBuild: true,
-          keepAll: true,
-          reportDir: 'api_skillcheker00/target/site',
-          reportFiles: 'surefire-report.html',
-          reportName: 'Surefire Report'
-        ]
-      }
-    }
   }
 
   post {
     always {
       junit 'api_skillcheker00/target/surefire-reports/*.xml'
+
+      dir('api_skillcheker00') {
+        sh 'mvn -B -q surefire-report:report || true'
+      }
+
+      publishHTML target: [
+        allowMissing: true,
+        alwaysLinkToLastBuild: true,
+        keepAll: true,
+        reportDir: 'api_skillcheker00/target/site',
+        reportFiles: 'surefire-report.html',
+        reportName: 'Surefire Report'
+      ]
 
       script {
         if (fileExists('api_skillcheker00/target/allure-results')) {
