@@ -10,7 +10,6 @@ pipeline {
         }
       }
     }
-
     stage('Test') {
       steps {
         dir('api_skillcheker00') {
@@ -22,10 +21,24 @@ pipeline {
 
   post {
     always {
-      // JUnit-отчёты
       junit 'api_skillcheker00/target/surefire-reports/*.xml'
-      // Артефакты на всякий случай
-      archiveArtifacts artifacts: 'api_skillcheker00/target/**', fingerprint: true
+      dir('api_skillcheker00') {
+        sh 'mvn -B -q surefire-report:report || true'
+      }
+      publishHTML(target: [
+        reportDir: 'api_skillcheker00/target/site',
+        reportFiles: 'surefire-report.html',
+        reportName: 'Surefire Report',
+        allowMissing: true,
+        keepAll: true,
+        alwaysLinkToLastBuild: true
+      ])
+      script {
+        if (fileExists('api_skillcheker00/target/allure-results')) {
+          allure results: [[path: 'api_skillcheker00/target/allure-results']], reportBuildPolicy: 'ALWAYS'
+        }
+      }
+      archiveArtifacts artifacts: 'api_skillcheker00/target/**', fingerprint: true, allowEmptyArchive: true
     }
   }
 }
