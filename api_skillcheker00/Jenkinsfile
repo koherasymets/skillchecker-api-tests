@@ -24,33 +24,6 @@ pipeline {
     always {
       junit 'api_skillcheker00/target/surefire-reports/*.xml'
       archiveArtifacts artifacts: 'api_skillcheker00/target/**', fingerprint: true
-
-      dir('api_skillcheker00') {
-        sh 'mvn -B -q surefire-report:report || true'
-      }
-
-      script {
-        if (fileExists('api_skillcheker00/target/site/surefire-report.html')) {
-          publishHTML(target: [
-            reportDir: 'api_skillcheker00/target/site',
-            reportFiles: 'surefire-report.html',
-            reportName: 'Surefire Report',
-            keepAll: true,
-            alwaysLinkToLastBuild: true,
-            allowMissing: false
-          ])
-        } else {
-          echo 'HTML report not found: api_skillcheker00/target/site'
-        }
-
-        if (fileExists('api_skillcheker00/target/allure-results')) {
-          allure commandline: 'allure',
-                 results: [[path: 'api_skillcheker00/target/allure-results']],
-                 reportBuildPolicy: 'ALWAYS'
-        } else {
-          echo 'Allure results not found: api_skillcheker00/target/allure-results'
-        }
-      }
     }
   }
 }
