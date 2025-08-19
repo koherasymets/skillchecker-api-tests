@@ -1,8 +1,23 @@
 pipeline {
   agent { label 'aws-ec2' }
-  options { timestamps() }
+  options {
+    timestamps()
+    skipDefaultCheckout(true)
+  }
 
   stages {
+    stage('Cleanup workspace') {
+      steps {
+        deleteDir()
+      }
+    }
+
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
     stage('Build') {
       steps {
         dir('api_skillcheker00') {
@@ -23,6 +38,29 @@ pipeline {
   post {
     always {
       junit 'api_skillcheker00/target/surefire-reports/*.xml'
+
+      dir('api_skillcheker00') {
+        sh 'mvn -B -q surefire-report:report || true'
+      }
+
+      publishHTML target: [
+        allowMissing: true,
+        alwaysLinkToLastBuild: true,
+        keepAll: true,
+        reportDir: 'api_skillcheker00/target/site',
+        reportFiles: 'surefire-report.html',
+        reportName: 'Surefire Report'
+      ]
+
+      script {
+        if (fileExists('api_skillcheker00/target/allure-results')) {
+          allure includeProperties: false,
+                 jdk: '',
+                 reportBuildPolicy: 'ALWAYS',
+                 results: [[path: 'api_skillcheker00/target/allure-results']]
+        }
+      }
+
       archiveArtifacts artifacts: 'api_skillcheker00/target/**', fingerprint: true
     }
   }
